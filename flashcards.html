@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Flashcard Generator</title>
+</head>
+<body>
+  <h2>Flashcard Generator</h2>
+  <input id="question" placeholder="Enter question">
+  <input id="answer" placeholder="Enter answer">
+  <button onclick="addCard()">Add</button>
+  <ul id="cards"></ul>
+
+  <script>
+    function addCard() {
+      const q = document.getElementById('question').value;
+      const a = document.getElementById('answer').value;
+      const li = document.createElement('li');
+      li.textContent = `Q: ${q} → A: ${a}`;
+      document.getElementById('cards').appendChild(li);
+    }
+  </script>
+</body>
+</html>
