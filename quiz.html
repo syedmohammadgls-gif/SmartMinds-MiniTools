@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SmartMinds Nutrition Quiz</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f0f8ff; }
+    h1 { color: #2c3e50; }
+    .question { margin-bottom: 20px; }
+    .options button { display: block; margin: 5px 0; padding: 10px; width: 100%; }
+    .result { font-weight: bold; margin-top: 10px; }
+    #final { margin-top: 30px; font-size: 1.2em; }
+  </style>
+</head>
+<body>
+  <h1>SmartMinds Nutrition Quiz</h1>
+  <div id="quiz"></div>
+  <div id="final"></div>
+
+  <script>
+    const questions = [
+      {
+        question: "Which part of Amoeba helps in capturing food?",
+        options: ["Cilia", "Flagella", "Pseudopodia", "Tentacles"],
+        answer: 2
+      },
+      {
+        question: "Which organ produces bile juice?",
+        options: ["Gall bladder", "Liver", "Pancreas", "Stomach"],
+        answer: 1
+      },
+      {
+        question: "Which of the following is not a ruminant?",
+        options: ["Cow", "Goat", "Horse", "Deer"],
+        answer: 2
+      },
+      {
+        question: "Which enzyme in saliva breaks down starch?",
+        options: ["Pepsin", "Trypsin", "Amylase", "Lipase"],
+        answer: 2
+      },
+      {
+        question: "In plants, which process converts sunlight into food?",
+        options: ["Respiration", "Transpiration", "Photosynthesis", "Digestion"],
+        answer: 2
+      }
+    ];
+
+    let score = 0;
+    let current = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      const quizDiv = document.getElementById("quiz");
+      quizDiv.innerHTML = `
+        <div class="question">
+          <h3>Q${current + 1}: ${q.question}</h3>
+          <div class="options">
+            ${q.options.map((opt, i) => `<button onclick="checkAnswer(${i})">${opt}</button>`).join('')}
+          </div>
+          <div id="result" class="result"></div>
+        </div>
+      `;
+    }
+
+    function checkAnswer(selected) {
+      const correct = questions[current].answer;
+      const resultDiv = document.getElementById("result");
+      if (selected === correct) {
+        resultDiv.textContent = "✅ Correct!";
+        score++;
+      } else {
+        resultDiv.textContent = `❌ Nope, it's ${questions[current].options[correct]}`;
+      }
+      setTimeout(() => {
+        current++;
+        if (current < questions.length) {
+          loadQuestion();
+        } else {
+          showFinal();
+        }
+      }, 1000);
+    }
+
+    function showFinal() {
+      document.getElementById("quiz").innerHTML = "";
+      const finalDiv = document.getElementById("final");
+      finalDiv.innerHTML = `🎯 Final Score: ${score}/${questions.length}<br>`;
+      if (score === questions.length) {
+        finalDiv.innerHTML += "🏆 Perfect! You’re a Nutrition Master.";
+      } else if (score >= 3) {
+        finalDiv.innerHTML += "👍 Good job! Keep reviewing.";
+      } else {
+        finalDiv.innerHTML += "📚 Time to revisit the Nutrition chapters.";
+      }
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
