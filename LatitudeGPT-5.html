@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>LatitudeGPT-5</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f3f3f3;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 6px;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 20px;
+      color: #0078d7;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+    input[type="text"] {
+      width: 70%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      padding: 10px 16px;
+      font-size: 14px;
+      background-color: #0078d7;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      margin-left: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005a9e;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 12px;
+      background-color: #f1f1f1;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      min-height: 80px;
+      white-space: pre-wrap;
+    }
+    #settingsPanel {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #eef6ff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>LatitudeGPT-5</h1>
+    <input type="text" id="userInput" placeholder="Type your question..." onkeydown="if(event.key==='Enter') respond()">
+    <button onclick="respond()">Ask</button>
+    <button onclick="clearOutput()">Clear</button>
+    <button onclick="toggleSettings()">Settings</button>
+
+    <div id="settingsPanel" style="display:none;">
+      <label for="nameInput">Enter your name:</label>
+      <input type="text" id="nameInput" placeholder="Your name">
+      <button onclick="saveName()">Save</button>
+    </div>
+
+    <div id="output"></div>
+  </div>
+
+  <script>
+    let userName = "";
+
+    const knowledgeBase = {
+      "what is gravity": "Gravity is the force that pulls objects toward each other. It keeps planets in orbit and makes things fall to the ground.",
+      "photosynthesis": "Photosynthesis is the process by which plants use sunlight, water, and carbon dioxide to make food and release oxygen.",
+      "2x + 3 = 9": "To solve: subtract 3 → 2x = 6 → divide by 2 → x = 3.",
+      "what is a noun": "A noun is a word that names a person, place, thing, or idea. Example: 'robot', 'school', 'Syed'.",
+      "what are planets": "Planets are large celestial bodies that orbit stars. In our solar system, there are 8 planets including Earth and Mars.",
+      "what is a verb": "A verb is a word that expresses an action or a state of being. Example: run, jump, think.",
+      "what is friction": "Friction is a force that resists motion between two surfaces that are touching.",
+      "what is a fraction": "A fraction represents a part of a whole. Example: 1/2 means one part out of two equal parts.",
+      "what is the water cycle": "The water cycle describes how water moves through evaporation, condensation, precipitation, and collection.",
+      "what is democracy": "Democracy is a system of government where people vote to choose their leaders and make decisions.",
+      "what is multiplication": "Multiplication is repeated addition. Example: 3 × 4 means 3 added four times = 12.",
+      "what is division": "Division is splitting a number into equal parts. Example: 12 ÷ 3 = 4.",
+      "what is subtraction": "Subtraction means taking away. Example: 10 - 4 = 6.",
+      "what is addition": "Addition means combining numbers. Example: 5 + 3 = 8.",
+      "what is a sentence": "A sentence is a group of words that expresses a complete thought.",
+      "what is a continent": "A continent is a large landmass. There are 7 continents: Asia, Africa, North America, South America, Antarctica, Europe, and Australia.",
+      "what is the solar system": "The solar system includes the sun and all the objects that orbit it, like planets, moons, and asteroids.",
+      "what is energy": "Energy is the ability to do work or cause change. It comes in forms like heat, light, and motion.",
+      "what is matter": "Matter is anything that has mass and takes up space.",
+      "what is an atom": "An atom is the smallest unit of matter. Everything is made of atoms.",
+      "what is a cell": "A cell is the basic unit of life. All living things are made of cells.",
+      "what is digestion": "Digestion is the process of breaking down food into nutrients the body can use.",
+      "what is respiration": "Respiration is the process of breathing and using oxygen to release energy from food.",
+      "what is a triangle": "A triangle is a shape with three sides and three angles.",
+      "what is area": "Area is the amount of space inside a shape. Example: Area of rectangle = length × width.",
+      "what is perimeter": "Perimeter is the distance around a shape. Add all the sides together.",
+      "what is volume": "Volume is the amount of space a 3D object takes up. Example: Volume of cube = side × side × side.",
+      "what is temperature": "Temperature measures how hot or cold something is.",
+      "what is a thermometer": "A thermometer is a tool used to measure temperature.",
+      "what is a magnet": "A magnet is an object that attracts iron and some other materials.",
+      "what is sound": "Sound is a form of energy made by vibrations that travel through air or other materials.",
+      "what is light": "Light is a form of energy that lets us see. It travels in waves.",
+      "what is a shadow": "A shadow is formed when light is blocked by an object.",
+      "what is a circuit": "A circuit is a path through which electricity flows.",
+      "what is electricity": "Electricity is a form of energy that powers devices and lights.",
+      "what is a computer": "A computer is a machine that processes information and performs tasks.",
+      "what is the internet": "The internet is a global network that connects computers and allows sharing of information.",
+      "what is a keyboard": "A keyboard is a device used to type letters, numbers, and symbols into a computer.",
+      "what is a mouse": "A mouse is a device used to move a pointer and click on items on a computer screen.",
+      "what is software": "Software is a set of instructions that tells a computer what to do.",
+      "what is hardware": "Hardware is the physical parts of a computer like the monitor, keyboard, and CPU.",
+      "what is a virus": "A virus is a harmful program that can damage computers or steal information.",
+      "what is recycling": "Recycling is turning waste materials into new products to reduce pollution.",
+      "what is pollution": "Pollution is the presence of harmful substances in the environment.",
+      "what is climate change": "Climate change is a long-term change in Earth's temperature and weather patterns.",
+      "what is a habitat": "A habitat is the natural home of a plant or animal.",
+      "what is adaptation": "Adaptation is a change that helps a living thing survive in its environment.",
+      "what is extinction": "Extinction is when a species no longer exists.",
+      "what is a food chain": "A food chain shows how energy moves from one living thing to another.",
+      "what is a producer": "A producer is a living thing that makes its own food, like a plant.",
+      "what is a consumer": "A consumer is a living thing that eats other organisms for energy.",
+      "hello": "Hi, I am LatitudeGPT-5, built by SmartMinds (C), built for clarifying your doubts and easing your studies in many ways. Find answers for any question Offline OR Online."
+    };
+
+    function respond() {
+      const input = document.getElementById("userInput").value.toLowerCase();
+      let output = "Sorry
