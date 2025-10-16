@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>LatitudeGPT-5 • SmartMinds (C)</title>
+  <script src="knowledgeBase.js"></script>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: linear-gradient(to right, #eef2f3, #8e9eab);
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #0078d7;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      width: 60%;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 16px;
+      font-size: 14px;
+      margin: 5px;
+      border: none;
+      border-radius: 6px;
+      background-color: #0078d7;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005a9e;
+    }
+
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 60%;
+      font-size: 16px;
+      color: #333;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>LatitudeGPT-5</h1>
+  <input type="text" id="userInput" placeholder="Ask me anything...">
+  <button onclick="respond()">Ask</button>
+  <button onclick="clearOutput()">Clear</button>
+  <div id="output"></div>
+
+  <script>
+    function respond() {
+      const input = document.getElementById("userInput").value.toLowerCase().trim();
+      let output = "Sorry, I don’t have info on that yet.";
+
+      for (const key in knowledgeBase) {
+        if (input.includes(key)) {
+          output = knowledgeBase[key];
+          break;
+        }
+      }
+
+      document.getElementById("output").innerText = output;
+    }
+
+    function clearOutput() {
+      document.getElementById("userInput").value = "";
+      document.getElementById("output").innerText = "";
+    }
+  </script>
+</body>
+</html>
